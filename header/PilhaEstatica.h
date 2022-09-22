@@ -4,20 +4,20 @@
 typedef struct {
     int v[MAX];
     int topo;
-} Pilha;
+} Estrutura;
 
-Pilha *cria_pilha() {
-    Pilha *p = (Pilha *)malloc(sizeof(Pilha));
+Estrutura *cria_pilha() {
+    Estrutura *p = (Estrutura *)malloc(sizeof(Estrutura));
     p->topo = -1;
     return p;
 }
 
-void push(Pilha *p, int x) {
+void insere(Estrutura *p, int x) {
     p->topo++;
     p->v[p->topo] = x;
 }
 
-int pop(Pilha *p) {
+int remove(Estrutura *p) {
     int t = p->v[p->topo];
     p->topo--;
     return t;
