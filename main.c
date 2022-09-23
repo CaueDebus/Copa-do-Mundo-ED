@@ -20,7 +20,8 @@
 typedef struct {
     char ***potes;
     char **times;
-    int quantTimes;
+    char **posicoes;
+    int quantTimes, quantDias, quantJogos;
     int N, K;
 } vars;
 
@@ -52,6 +53,17 @@ void alocaPotes(vars * variaveis)
             variaveis->potes[w][b] = malloc(sizeof(char) * 30);
 
     return variaveis->potes;
+}
+
+void alocaPosicoes(vars * variaveis)
+{
+    // aloca quantidade de strings que tera o vetor
+    variaveis->posicoes = malloc(sizeof(char*) * variaveis->N);
+
+    // aloca quantidade de caracteres por string dentro do vetor
+    int j;
+    for(j = 0; j < variaveis->N; j++)
+        variaveis->posicoes[j] = malloc(30 * sizeof(char));
 }
 
 void imprimeTimes(vars * variaveis)
@@ -86,6 +98,11 @@ void liberaMem(vars * variaveis)
         free(variaveis->times[k]);
     free(variaveis->times);
 
+    // libera memoria do vetor de posicoes
+    for(k = 0; k < variaveis->N; k++)
+        free(variaveis->posicoes[k]);
+    free(variaveis->posicoes);
+
     // libera memoria do matriz de potes
     for(k = 0; k < variaveis->K; k++)
     {
@@ -106,10 +123,19 @@ int main()
     // vetor dos times
     alocaTimes(&variaveis);
 
+    // vetor das posicoes
+    alocaPosicoes(&variaveis);
+
     // verifica quantidade de times por pote
     variaveis.quantTimes = variaveis.N / variaveis.K;
     if (variaveis.N % variaveis.K != 0)
         variaveis.quantTimes += 1;
+
+    // verifica a quantidade de partidas que serao jogadas
+    variaveis.quantJogos = variaveis.N / 2;
+    variaveis.quantDias = variaveis.quantJogos / 2;
+    if (variaveis.quantJogos % 2 != 0)
+        variaveis.quantDias += 1;
 
     // matriz dos potes
     alocaPotes(&variaveis);
@@ -132,8 +158,47 @@ int main()
         }
     }
 
-    imprimeMatriz(&variaveis);
+    variaveis.posicoes = variaveis.times;
 
+    // looping principal
+    int temCampeao = 0, dias = 0;
+    while(!temCampeao)
+    {
+        if(dias == 0)
+        {
+            dias++;
+            printf("\nFase incial:\n");
+            // mostrar as primeiras partidas que acontecerao
+        }
+        // mostrar os dias em ordem e o resultado dos jogos
+        if (dias == variaveis.quantDias)
+        {
+            printf("\nGrande Final:\n");
+        }
+        temCampeao = 1;
+        dias++;
+    }
+
+    // resultado final
+    int pos;
+    for(pos = 0;pos < variaveis.N; pos++)
+    {
+        if(pos == 0)
+        {
+            printf("\n Campeao: %s\n", variaveis.posicoes[pos]);
+        }
+        else if(pos == 1)
+        {
+            printf("    Vice: %s\n", variaveis.posicoes[pos]);
+        }
+        else
+        {
+            printf("%do lugar: %s\n", pos+1, variaveis.posicoes[pos]);
+        }
+    }
+
+    //imprimeTimes(&variaveis);
+    //imprimeMatriz(&variaveis);
     liberaMem(&variaveis);
 
     return 0;
