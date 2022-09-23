@@ -12,12 +12,12 @@ Estrutura *cria_pilha() {
     return p;
 }
 
-void insere(Estrutura *p, int x) {
+void push(Estrutura *p, int x) {
     p->topo++;
     p->v[p->topo] = x;
 }
 
-int remove(Estrutura *p) {
+int pop(Estrutura *p) {
     int t = p->v[p->topo];
     p->topo--;
     return t;

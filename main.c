@@ -1,6 +1,6 @@
-#include "header/FilaDinamica.h" // -> lista ligada
-#include "header/FilaEstatica.h" // -> vetor
-#include "header/PilhaDinamica.h" // -> lista ligada
+//#include "header/FilaDinamica.h" // -> lista ligada
+//#include "header/FilaEstatica.h" // -> vetor
+//#include "header/PilhaDinamica.h" // -> lista ligada
 #include "header/PilhaEstatica.h" // -> vetor
 #include <stdio.h>
 #include <math.h>
@@ -17,96 +17,124 @@
     maiusculas
 */
 
-int main()
-{
-    // N times, K potes
-    int N, K;
-
-    // recebe N  e K
-    scanf("%d %d", &N, &K);
-
-    // vetor dos times
+typedef struct {
+    char ***potes;
     char **times;
+    int quantTimes;
+    int N, K;
+} vars;
 
+void alocaTimes(vars * variaveis)
+{
     // aloca quantidade de strings que tera o vetor
-    times = malloc(sizeof(char*) * N);
+    variaveis->times = malloc(sizeof(char*) * variaveis->N);
 
     // aloca quantidade de caracteres por string dentro do vetor
     int j;
-    for(j = 0; j < N; j++)
-        times[j] = malloc(20 * sizeof(char));
+    for(j = 0; j < variaveis->N; j++)
+        variaveis->times[j] = malloc(30 * sizeof(char));
+}
 
-    // matriz dos potes
-    char ***potes;
-
+void alocaPotes(vars * variaveis)
+{
     // aloca numero de potes como linhas da matriz
-    potes = malloc(sizeof(char*) * K);
-
-    // verifica quantidade de times por pote
-    int quantTimes = N / K;
-    if (N % K != 0)
-        quantTimes += 1;
+    variaveis->potes = malloc(sizeof(char*) * variaveis->K);
 
     // aloca numero de colunas ou seja numero de times por pote
     int z;
-    for(z = 0; z < K; z++)
-        potes[z] = malloc(sizeof(char*) * quantTimes);
+    for(z = 0; z < variaveis->K; z++)
+        variaveis->potes[z] = malloc(sizeof(char*) * variaveis->quantTimes);
 
     // aloca numero de caracteres por celula da matriz
     int w, b;
-    for(w = 0; w < K; w++)
-        for(b = 0; b < quantTimes; b++)
-            potes[w][b] = malloc(sizeof(char) * 20);
+    for(w = 0; w < variaveis->K; w++)
+        for(b = 0; b < variaveis->quantTimes; b++)
+            variaveis->potes[w][b] = malloc(sizeof(char) * 30);
+
+    return variaveis->potes;
+}
+
+void imprimeTimes(vars * variaveis)
+{
+    // testa vetor times
+    printf("\n");
+    int i;
+    for(i = 0;i < variaveis->N; i++)
+        printf("%s\n", variaveis->times[i]);
+}
+
+void imprimeMatriz(vars * variaveis)
+{
+    // testa a matriz de potes
+    int m, j;
+    for(m = 0; m < variaveis->K; m++)
+    {  
+        printf("\npote: ");
+        for(j = 0; j < variaveis->quantTimes; j++)
+        {
+            if(variaveis->potes[m][j] != NULL)
+                printf("%s ", variaveis->potes[m][j]);
+        }
+    }
+}
+
+void liberaMem(vars * variaveis)
+{
+    // libera memoria do vetor de times
+    int k, j;
+    for(k = 0; k < variaveis->N; k++)
+        free(variaveis->times[k]);
+    free(variaveis->times);
+
+    // libera memoria do matriz de potes
+    for(k = 0; k < variaveis->K; k++)
+    {
+        for(j = 0; j < variaveis->quantTimes; j++)
+            free(variaveis->potes[k][j]);
+        free(variaveis->potes[k]);
+    }
+    free(variaveis->potes);
+}
+
+int main()
+{
+    vars variaveis;
+
+    // recebe N  e K
+    scanf("%d %d", &variaveis.N, &variaveis.K);
+
+    // vetor dos times
+    alocaTimes(&variaveis);
+
+    // verifica quantidade de times por pote
+    variaveis.quantTimes = variaveis.N / variaveis.K;
+    if (variaveis.N % variaveis.K != 0)
+        variaveis.quantTimes += 1;
+
+    // matriz dos potes
+    alocaPotes(&variaveis);
 
     // recebe o nome dos times
     int i;
-    for(i = 0;i < N; i++)
-        scanf("%s", times[i]);
-
-    // testa vetor times
-    /*printf("\n");
-    for(i = 0;i < N; i++)
-        printf("%s\n", times[i]);*/
+    for(i = 0;i < variaveis.N; i++)
+        scanf("%s", variaveis.times[i]);
 
     // monta a matriz com os potes formados
     int x = 0, y = 0;
-    for(i = 0; i < N; i++)
+    for(i = 0; i < variaveis.N; i++)
     {
-        potes[x][y] = times[i];
+        variaveis.potes[x][y] = variaveis.times[i];
         x++;
-        if(x == K)
+        if(x == variaveis.K)
         {
             x = 0;
             y++;
         }
     }
 
-    // testa a matriz de potes
-    int m;
-    for(m = 0; m < K; m++)
-    {  
-        printf("\npote: ");
-        for(j = 0; j < quantTimes; j++)
-        {
-            if(potes[m][j] != NULL)
-                printf("%s ", potes[m][j]);
-        }
-    }
+    imprimeMatriz(&variaveis);
 
-    // libera memoria do vetor de times
-    int k;
-    for(k = 0; k < N; k++)
-        free(times[k]);
-    free(times);
-
-    // libera memoria do matriz de potes
-    for(k = 0; k < K; k++)
-    {
-        for(j = 0; j < quantTimes; j++)
-            free(potes[k][j]);
-        free(potes[k]);
-    }
-    free(potes);
+    liberaMem(&variaveis);
 
     return 0;
 }
