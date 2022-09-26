@@ -1,7 +1,7 @@
 //#include "header/FilaDinamica.h" // -> lista ligada
 //#include "header/FilaEstatica.h" // -> vetor
 //#include "header/PilhaDinamica.h" // -> lista ligada
-#include "header/PilhaEstatica.h" // -> vetor
+#include "header/PilhaEstatica.h" // vetor
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -80,7 +80,7 @@ void imprimeMatriz(vars * variaveis)
     // testa a matriz de potes
     int m, j;
     for(m = 0; m < variaveis->K; m++)
-    {  
+    {
         printf("\npote: ");
         for(j = 0; j < variaveis->quantTimes; j++)
         {
@@ -132,7 +132,7 @@ int main()
         variaveis.quantTimes += 1;
 
     // verifica a quantidade de partidas que serao jogadas
-    variaveis.quantJogos = variaveis.N / 2;
+    variaveis.quantJogos = variaveis.N - 1;
     variaveis.quantDias = variaveis.quantJogos / 2;
     if (variaveis.quantJogos % 2 != 0)
         variaveis.quantDias += 1;
@@ -158,25 +158,46 @@ int main()
         }
     }
 
+    //imprimeMatriz(&variaveis);
     variaveis.posicoes = variaveis.times;
 
     // looping principal
-    int temCampeao = 0, dias = 0;
+    int temCampeao = 0, dias = 0, r = 0, t = 0, h = 0;
     while(!temCampeao)
     {
         if(dias == 0)
         {
             dias++;
-            printf("\nFase incial:\n");
-            // mostrar as primeiras partidas que acontecerao
+            printf("\nFila incial:\n");
+            for(h = 0;h < variaveis.N; h++)
+            {
+                if(r == variaveis.K)
+                {
+                    r = 0;
+                    t++;
+                }
+                printf("        %s x", variaveis.potes[r][t]);
+                r++;
+                if(r == variaveis.K)
+                {
+                    r = 0;
+                    t++;
+                }
+                h++;
+                printf(" %s\n", variaveis.potes[r][t]);
+                r++;
+            }
         }
-        // mostrar os dias em ordem e o resultado dos jogos
-        if (dias == variaveis.quantDias)
+        else if (dias == variaveis.quantDias)
         {
             printf("\nGrande Final:\n");
+            temCampeao = 1;
         }
-        temCampeao = 1;
-        dias++;
+        else
+        {
+            printf("\nDia: %d\n", dias);
+            dias++;
+        }
     }
 
     // resultado final
@@ -198,7 +219,6 @@ int main()
     }
 
     //imprimeTimes(&variaveis);
-    //imprimeMatriz(&variaveis);
     liberaMem(&variaveis);
 
     return 0;
